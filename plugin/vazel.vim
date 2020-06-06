@@ -5,7 +5,7 @@ command! VazelBuild :call vazel#Build()
 command! VazelIBuild :call vazel#IBuild()
 
 " Runs ibazel run for the given target
-command! VazelIRun :call vazel#IRun()
+command! -nargs=* VazelIRun :call vazel#IRun(<q-args>)
 
 " Runs bazel test for the current file's package
 command! VazelTest :call vazel#Test()

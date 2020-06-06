@@ -32,9 +32,13 @@ endfunction
 
 ""
 " Build the current package with ibazel
-function! vazel#IRun()
+function! vazel#IRun(...)
+    let l:target = ""
+    if !empty(a:000) && a:000[-1] !=# ""
+        let l:target = ":" . a:000[-1]
+    endif
     let l:package_label = s:GetPackageLabel()
-    let l:build_command = 'ibazel run ' . l:package_label
+    let l:build_command = 'ibazel run ' . l:package_label . l:target
     call s:SendBazelCommand(l:build_command)
 endfunction
 
