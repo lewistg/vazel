@@ -10,7 +10,7 @@ endfunction
 " Build the current package with ibazel
 function! vazel#IBuild()
     let l:package_label = s:GetPackageLabel()
-    let l:build_command = 'ibazel --run_output build ' . l:package_label
+    let l:build_command = 'ibazel --run_output --run_output_interactive=false build ' . l:package_label
     call s:SendBazelCommand(l:build_command)
 endfunction
 
@@ -26,7 +26,15 @@ endfunction
 " Build the current package with ibazel
 function! vazel#ITest()
     let l:package_label = s:GetPackageLabel()
-    let l:build_command = 'ibazel --run_output test ' . l:package_label
+    let l:build_command = 'ibazel --run_output --run_output_interactive=false test ' . l:package_label
+    call s:SendBazelCommand(l:build_command)
+endfunction
+
+""
+" Build the current package with ibazel
+function! vazel#IRun()
+    let l:package_label = s:GetPackageLabel()
+    let l:build_command = 'ibazel run ' . l:package_label
     call s:SendBazelCommand(l:build_command)
 endfunction
 
