@@ -1,11 +1,14 @@
 " Runs bazel build for the current file's package
-command! VazelBuild :call vazel#Build()
+command! -nargs=* VazelBuild :call vazel#Build(<f-args>)
 
 " Runs ibazel build for the current file's package
-command! VazelIBuild :call vazel#IBuild()
+command! -nargs=* VazelIBuild :call vazel#IBuild(<f-args>)
 
 " Runs ibazel run for the given target
-command! -nargs=* VazelIRun :call vazel#IRun(<q-args>)
+command! -nargs=* VazelRun :call vazel#Run(<f-args>)
+
+" Runs ibazel run for the given target
+command! -nargs=* VazelIRun :call vazel#IRun(<f-args>)
 
 " Runs bazel test for the current file's package
 command! VazelTest :call vazel#Test()

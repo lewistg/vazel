@@ -1,22 +1,32 @@
+let s:BAZEL = 'bazel'
+let s:IBAZEL = 'ibazel'
+
+let s:BUILD = 'build'
+let s:RUN = 'run'
+let s:TEST = 'test'
+
 ""
 " Build the current package with bazel
-function! vazel#Build() abort
-    let l:package_label = s:GetPackageLabel()
-    let l:build_command = 'bazel build ' . l:package_label
-    call s:SendBazelCommand(l:build_command)
+function! vazel#Build(...) abort
+    let l:args = s:ParseCommandArguments(a:000)
+    let l:target_label = s:GetTargetLabel(l:args.target_name)
+    let l:command = s:FormatBazelCommand(s:BAZEL, s:BUILD, l:args.native_bazel_options, l:target_label)
+    call s:SendBazelCommand(l:command)
 endfunction
 
 ""
 " Build the current package with ibazel
-function! vazel#IBuild()
-    let l:package_label = s:GetPackageLabel()
-    let l:build_command = 'ibazel --run_output --run_output_interactive=false build ' . l:package_label
-    call s:SendBazelCommand(l:build_command)
+function! vazel#IBuild(...) abort
+    let l:args = s:ParseCommandArguments(a:000)
+    let l:options = '--run_output --run_output_interactive=false ' . l:args.native_bazel_options
+    let l:target_label = s:GetTargetLabel(l:args.target_name)
+    let l:command = s:FormatBazelCommand(s:IBAZEL, s:BUILD, l:options, l:target_label)
+    call s:SendBazelCommand(l:command)
 endfunction
 
 ""
 " Build the current package with ibazel
-function! vazel#Test()
+function! vazel#Test() abort
     let l:package_label = s:GetPackageLabel()
     let l:build_command = 'bazel test ' . l:package_label
     call s:SendBazelCommand(l:build_command)
@@ -25,21 +35,38 @@ endfunction
 ""
 " Build the current package with ibazel
 function! vazel#ITest()
-    let l:package_label = s:GetPackageLabel()
-    let l:build_command = 'ibazel --run_output --run_output_interactive=false test ' . l:package_label
+    let l:args = s:ParseCommandArguments(a:000)
+    let l:options = '--run_output --run_output_interactive=false ' + l:args.native_bazel_options
+    let l:target_label = s:GetTargetLabel(l:args.target_name)
+    let l:command = s:FormatBazelCommand(s:IBAZEL, s:TEST, l:options, l:target_label)
     call s:SendBazelCommand(l:build_command)
 endfunction
 
 ""
-" Build the current package with ibazel
-function! vazel#IRun(...)
-    let l:target = ""
-    if !empty(a:000) && a:000[-1] !=# ""
-        let l:target = ":" . a:000[-1]
+" Run an executable target
+function! vazel#Run(...) abort
+    let l:args = s:ParseCommandArguments(a:000)
+    let l:target_label = s:GetTargetLabel(l:args.target_name)
+    let l:command = s:FormatBazelCommand(s:BAZEL, s:RUN, l:args.native_bazel_options, l:target_label)
+    call s:SendBazelCommand(l:command)
+endfunction
+
+""
+" Run an executable target with ibazel
+function! vazel#IRun(...) abort
+    let l:args = s:ParseCommandArguments(a:000)
+    let l:target_label = s:GetTargetLabel(l:args.target_name)
+    let l:command = s:FormatBazelCommand(s:IBAZEL, s:RUN, l:args.native_bazel_options, l:target_label)
+    call s:SendBazelCommand(l:command)
+endfunction
+
+function! s:FormatBazelCommand(command, sub_command, options, target) abort
+    let l:command_string = a:command
+    if a:options !=# ""
+        let l:command_string = l:command_string . " " . a:options
     endif
-    let l:package_label = s:GetPackageLabel()
-    let l:build_command = 'ibazel run ' . l:package_label . l:target
-    call s:SendBazelCommand(l:build_command)
+    let l:command_string = l:command_string . " " . a:sub_command . " " . a:target
+    return l:command_string
 endfunction
 
 ""
@@ -50,6 +77,41 @@ function! vazel#OpenBUILD() abort
         throw "Could not find BUILD file"
     endif
     execute "vs " . l:build_file
+endfunction
+
+function! s:ParseCommandArguments(command_args) abort
+    let l:args = {}
+
+    " Set defaults
+    let l:args.target_name = ''
+    let l:args.native_bazel_options = ''
+
+    if empty(a:command_args)
+        return l:args
+    endif
+
+    let l:native_bazel_options_start_index = index(a:command_args, "--")
+    if l:native_bazel_options_start_index == -1
+        let l:native_bazel_options_start_index = len(a:command_args)
+    else
+        let l:native_bazel_options_start_index += 1
+    endif
+    
+    let l:vazel_options = a:command_args[0:l:native_bazel_options_start_index - 2]
+    let l:args.target_name = get(l:vazel_options, -1, '')
+
+    let l:args.native_bazel_options = join(a:command_args[l:native_bazel_options_start_index:])
+
+    return l:args 
+endfunction
+
+function! s:GetTargetLabel(target_name) abort
+    let l:target_suffix = ""
+    if a:target_name !=# ""
+        let l:target_suffix = ":" . a:target_name
+    endif
+    let l:package_label = s:GetPackageLabel()
+    return l:package_label . l:target_suffix
 endfunction
 
 function! s:GetPackageLabel() abort
