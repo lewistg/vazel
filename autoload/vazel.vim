@@ -71,12 +71,24 @@ endfunction
 
 ""
 " Open the BUILD.bazel file for the current file's package
-function! vazel#OpenBUILD() abort
+function! vazel#OpenBUILDInHorizontalSplit() abort
+    call s:SplitWithBUILD(0)
+endfunction
+
+function! vazel#OpenBUILDInVerticalSplit() abort
+    call s:SplitWithBUILD(1)
+endfunction
+
+function! s:SplitWithBUILD(vertical_split) abort
     let l:build_file = s:FindBUILDFile()
     if l:build_file ==# ""
         throw "Could not find BUILD file"
     endif
-    execute "vs " . l:build_file
+    if a:vertical_split
+        execute "vs " . l:build_file
+    else
+        execute "sp" . l:build_file
+    endif
 endfunction
 
 function! s:ParseCommandArguments(command_args) abort

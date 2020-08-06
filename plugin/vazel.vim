@@ -16,5 +16,8 @@ command! VazelTest :call vazel#Test()
 " Runs ibazel test for the current file's package
 command! VazelITest :call vazel#ITest()
 
-" Opens the BUILD/BUILD.bazel for the current file's package
-command! VazelOpenBUILD :call vazel#OpenBUILD()
+" Opens the BUILD (or BUILD.bazel) for the current file's package in a horizontal split
+command! VazelSpBUILD :call vazel#OpenBUILDInHorizontalSplit()
+
+" Opens the BUILD (or BUILD.bazel) for the current file's package in a vertical split
+command! VazelVsBUILD :call vazel#OpenBUILDInVerticalSplit()

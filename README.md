@@ -53,5 +53,8 @@ terminal pane.
   bazel test [bazel_options] //<files_current_package>[:<target_name>] 
   ```
 
-* `:VazelOpenBUILD` Opens the BUILD file for the current file's package. The
-  BUILD file is opened in a vertical split.
+* `:VazelSpBUILD` Opens the BUILD (or BUILD.bazel) for the current file's
+  package in a horizontal split.
+
+* `:VazelVsBUILD` Opens the BUILD (or BUILD.bazel) for the current file's
+  package in a vertical split.
