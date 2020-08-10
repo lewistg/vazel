@@ -28,8 +28,8 @@ endfunction
 " Build the current package with ibazel
 function! vazel#Test() abort
     let l:package_label = s:GetPackageLabel()
-    let l:build_command = 'bazel test ' . l:package_label
-    call s:SendBazelCommand(l:build_command)
+    let l:command = 'bazel test ' . l:package_label
+    call s:SendBazelCommand(l:command)
 endfunction
 
 ""
@@ -39,7 +39,7 @@ function! vazel#ITest()
     let l:options = '--run_output --run_output_interactive=false ' + l:args.native_bazel_options
     let l:target_label = s:GetTargetLabel(l:args.target_name)
     let l:command = s:FormatBazelCommand(s:IBAZEL, s:TEST, l:options, l:target_label)
-    call s:SendBazelCommand(l:build_command)
+    call s:SendBazelCommand(l:command)
 endfunction
 
 ""
