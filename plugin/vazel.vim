@@ -21,3 +21,6 @@ command! VazelSpBUILD :call vazel#OpenBUILDInHorizontalSplit()
 
 " Opens the BUILD (or BUILD.bazel) for the current file's package in a vertical split
 command! VazelVsBUILD :call vazel#OpenBUILDInVerticalSplit()
+
+" Yanks the package label for the current source file's package
+command -nargs=? VazelYankPackageLabel :call vazel#YankPackageLabel(<f-args>)

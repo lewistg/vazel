@@ -91,6 +91,16 @@ function! s:SplitWithBUILD(vertical_split) abort
     endif
 endfunction
 
+""
+" Yanks the package label for the current source file's package
+function! vazel#YankPackageLabel(...) abort
+    if a:0 ==# 1
+        let l:target_suffix = ':' . a:1
+    endif 
+    let l:label = s:GetPackageLabel() . get(l:, 'target_suffix', '')
+    let @" = l:label . "\n"
+endfunction
+
 function! s:ParseCommandArguments(command_args) abort
     let l:args = {}
 
