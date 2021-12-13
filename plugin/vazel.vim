@@ -24,3 +24,8 @@ command! VazelVsBUILD :call vazel#OpenBUILDInVerticalSplit()
 
 " Yanks the package label for the current source file's package
 command -nargs=? VazelYankPackageLabel :call vazel#YankPackageLabel(<f-args>)
+
+" Define which pane should be used for building. As an argument you can pass
+" either the pane ID ($TMUX_PANE) or either of the tokens `{top-right}` or
+" `{bottom-left}`
+command! -nargs=1 VazelSetBuildPane :call vazel#tmux#SetBuildPane(<f-args>)
