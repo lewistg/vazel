@@ -11,7 +11,7 @@ function! vazel#Build(...) abort
     let l:args = s:ParseCommandArguments(a:000)
     let l:target_label = s:GetTargetLabel(l:args.target_name)
     let l:command = s:FormatBazelCommand(s:BAZEL, s:BUILD, l:args.native_bazel_options, l:target_label)
-    call s:SendBazelCommand(l:command)
+    call vazel#tmux#SendBazelCommand(l:command)
 endfunction
 
 ""
@@ -21,7 +21,7 @@ function! vazel#IBuild(...) abort
     let l:options = '--run_output --run_output_interactive=false ' . l:args.native_bazel_options
     let l:target_label = s:GetTargetLabel(l:args.target_name)
     let l:command = s:FormatBazelCommand(s:IBAZEL, s:BUILD, l:options, l:target_label)
-    call s:SendBazelCommand(l:command)
+    call vazel#tmux#SendBazelCommand(l:command)
 endfunction
 
 ""
@@ -29,7 +29,7 @@ endfunction
 function! vazel#Test() abort
     let l:package_label = s:GetPackageLabel()
     let l:command = 'bazel test ' . l:package_label
-    call s:SendBazelCommand(l:command)
+    call vazel#tmux#SendBazelCommand(l:command)
 endfunction
 
 ""
@@ -39,7 +39,7 @@ function! vazel#ITest()
     let l:options = '--run_output --run_output_interactive=false ' + l:args.native_bazel_options
     let l:target_label = s:GetTargetLabel(l:args.target_name)
     let l:command = s:FormatBazelCommand(s:IBAZEL, s:TEST, l:options, l:target_label)
-    call s:SendBazelCommand(l:command)
+    call vazel#tmux#SendBazelCommand(l:command)
 endfunction
 
 ""
@@ -48,7 +48,7 @@ function! vazel#Run(...) abort
     let l:args = s:ParseCommandArguments(a:000)
     let l:target_label = s:GetTargetLabel(l:args.target_name)
     let l:command = s:FormatBazelCommand(s:BAZEL, s:RUN, l:args.native_bazel_options, l:target_label)
-    call s:SendBazelCommand(l:command)
+    call vazel#tmux#SendBazelCommand(l:command)
 endfunction
 
 ""
@@ -57,7 +57,9 @@ function! vazel#IRun(...) abort
     let l:args = s:ParseCommandArguments(a:000)
     let l:target_label = s:GetTargetLabel(l:args.target_name)
     let l:command = s:FormatBazelCommand(s:IBAZEL, s:RUN, l:args.native_bazel_options, l:target_label)
-    call s:SendBazelCommand(l:command)
+    " TODO: Remove
+    let l:command = l:command . ' --test_filter="' . expand("%:t") . '"'
+    call vazel#tmux#SendBazelCommand(l:command)
 endfunction
 
 function! s:FormatBazelCommand(command, sub_command, options, target) abort
@@ -140,12 +142,6 @@ function! s:GetPackageLabel() abort
     let l:workspace_path = s:GetWorkspacePath()
     let l:package_path = s:GetPackagePath()
     return "/" . substitute(l:package_path, l:workspace_path, "", "g")
-endfunction
-
-""
-" Sends a bazel command to the designated tmux window
-function! s:SendBazelCommand(bazel_command) abort
-    call system("tmux send-keys -t {bottom-left} \"" . a:bazel_command . "\" Enter")
 endfunction
 
 ""
